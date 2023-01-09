@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Workout {
+  id            Int     @id @default(autoincrement())
+  hours         Int
+  minutes       Int
+  calories      Int
+  avgHeartRate  Int
+  notes         String?
+  date          DateTime
+  exercises     WorkoutExercise[]
+}
+
+model Exercise {
+  id          Int         @id @default(autoincrement())
+  name        String
+  type        Type        @relation(fields: [typeId], references: [id])
+  typeId      Int
+  workouts    WorkoutExercise[]
+  sets        Set[]
+}
+
+model Type {
+  id        Int @id
+  name      String
+  exercises Exercise[]
+}
+
+model WorkoutExercise {
+  id         Int        @id @default(autoincrement())
+  workout    Workout    @relation(fields: [workoutId], references: [id])
+  workoutId  Int
+  exercise   Exercise  @relation(fields: [exerciseId], references: [id])
+  exerciseId Int
+  reps       Int
+}
+
+model Set {
+  id         Int       @id @default(autoincrement())
+  exercise   Exercise  @relation(fields: [exerciseId], references: [id])
+  exerciseId Int
+  reps       Int
+  weight     Float
+}
