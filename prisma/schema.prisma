@@ -23,7 +23,6 @@ model Workout {
 
 model Exercise {
   id          Int         @id @default(autoincrement())
-  name        String
   type        Type        @relation(fields: [typeId], references: [id])
   typeId      Int
   workouts    WorkoutExercise[]
@@ -42,7 +41,6 @@ model WorkoutExercise {
   workoutId  Int
   exercise   Exercise  @relation(fields: [exerciseId], references: [id])
   exerciseId Int
-  reps       Int
 }
 
 model Set {

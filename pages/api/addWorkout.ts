@@ -1,5 +1,6 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
+import prisma from "@/lib/prisma";
+import { Exercise } from "@prisma/client";
 
 type Data = {
   name: string;
@@ -12,9 +13,11 @@ type Body = {
   date: String;
   avgHeartRate: number;
   notes?: string;
+  exercises: Exercise[]; //{name: string}
+
 };
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
