@@ -17,15 +17,16 @@ model Workout {
   calories      Int
   avgHeartRate  Int
   notes         String?
-  date          DateTime
-  exercises     WorkoutExercise[]
+  date          String
+  exercises     Exercise[]
 }
 
 model Exercise {
   id          Int         @id @default(autoincrement())
   type        Type        @relation(fields: [typeId], references: [id])
   typeId      Int
-  workouts    WorkoutExercise[]
+  workout     Workout    @relation(fields: [workoutId], references: [id])
+  workoutId   Int
   sets        Set[]
 }
 
@@ -35,13 +36,6 @@ model Type {
   exercises Exercise[]
 }
 
-model WorkoutExercise {
-  id         Int        @id @default(autoincrement())
-  workout    Workout    @relation(fields: [workoutId], references: [id])
-  workoutId  Int
-  exercise   Exercise  @relation(fields: [exerciseId], references: [id])
-  exerciseId Int
-}
 
 model Set {
   id         Int       @id @default(autoincrement())
