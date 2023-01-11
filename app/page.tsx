@@ -147,13 +147,13 @@ export default function Home() {
                     background:
                       i > currentBox
                         ? "transparent"
-                        : `rgb(18, 122, 223, ${transparency})`,
+                        : `rgb(0, 0, 0, ${transparency})`,
 
                     border: `1px solid ${
                       transparency === 0
-                        ? "#EEF6FD"
+                        ? "#D9D9D9"
                         : i > currentBox
-                        ? "#EEF6FD"
+                        ? "#D9D9D9"
                         : "transparent"
                     }`,
                   }}
