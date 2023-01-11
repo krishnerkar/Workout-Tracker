@@ -135,7 +135,7 @@ export default function Home() {
   };
 
   const addWorkout = () => {
-    if (!hours || !minutes || !calories || !heartRate) {
+    if ( !minutes || !calories || !heartRate) {
       toast.error("Please fill in all fields!");
       return;
     }

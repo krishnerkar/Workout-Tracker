@@ -43,4 +43,6 @@ model Set {
   exerciseId Int
   reps       Int
   weight     Float
+  fail       Boolean?   @default(false)
+  assisted   Boolean?   @default(false)
 }

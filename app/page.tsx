@@ -1,7 +1,11 @@
 "use client";
 
 import localFont from "@next/font/local";
+import { useEffect, useState } from "react";
 import styles from "./page.module.css";
+import { SimpleWorkout } from "pages/api/get-workouts";
+import { toast, Toaster } from "react-hot-toast";
+import { Tooltip } from "@mantine/core";
 
 const calSans = localFont({
   src: "../fonts/CalSans-SemiBold.woff",
@@ -35,6 +39,51 @@ const matter = localFont({
 });
 
 export default function Home() {
+  const [workouts, setWorkouts] = useState<SimpleWorkout[]>([]);
+
+  useEffect(() => {
+    fetch("/api/get-workouts", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      if (res.ok) {
+        res.json().then((data) => {
+          setWorkouts(data.workouts);
+        });
+      } else {
+        toast.error("Something went wrong!");
+      }
+    });
+  });
+
+  const time = workouts?.map((workout) => workout.hours * 60 + workout.minutes);
+  const max = Math.max(...(time || []));
+  const min = Math.min(0);
+
+  const [currentBox, setCurrentBox] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [animationCompleted, setAnimationCompleted] = useState(false);
+
+  useEffect(() => {
+    if (workouts.length == 0) return;
+    if (!isAnimating && !animationCompleted) {
+      setIsAnimating(true);
+      setTimeout(() => {
+        setCurrentBox(currentBox + 1);
+        setIsAnimating(false);
+      }, 50);
+      if (currentBox == workouts.length) setAnimationCompleted(true);
+    }
+  }, [currentBox, isAnimating, workouts]);
+
+  const today = new Date();
+  const startOfYear = new Date(today.getFullYear(), 0, 1);
+  const diffInMilliSeconds = today.getTime() - startOfYear.getTime();
+  const oneDay = 1000 * 60 * 60 * 24;
+  let currWorkoutIndex = 0;
+
   return (
     <div>
       <h1 className={`${styles.title} ${calSans.className}`}>
@@ -48,20 +97,77 @@ export default function Home() {
 
       <div className={styles.grid}>
         {[...Array(365)].map((_, i) => {
-          const random = Math.random();
+          const day = i + 2;
+          const date = new Date(new Date().getFullYear(), 0, day);
+
+          let transparency = 0;
+
+          const workoutForDate = workouts.find(
+            (workout) => workout.date === date.toISOString().split("T")[0]
+          );
+          if (workoutForDate) {
+            currWorkoutIndex = workouts.indexOf(workoutForDate);
+            transparency = time[currWorkoutIndex] / max;
+          }
+
+          const dateString = new Date(date.toISOString().split("T")[0])
+            .toLocaleDateString("en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+            })
+            .split(",")
+            .join("");
 
           return (
-            <div
-              key={i}
-              className={styles.box}
+            <Tooltip
+              className={matter.className}
               style={{
-                // background: `rgb(18, 122, 223, ${random})`,
-                border: `1px solid #D9D9D9`,
+                background: "#000",
+                fontSize: "10px",
               }}
-            />
+              key={i}
+              label={
+                transparency !== 0
+                  ? `${time[currWorkoutIndex]} minutes - ${dateString}`
+                  : `No workout on ${dateString}`
+              }
+            >
+              <div
+                className={`${styles.box} ${
+                  i === currentBox ? styles.animate : ""
+                }`}
+                style={{
+                  background:
+                    i > currentBox
+                      ? "transparent"
+                      : `rgb(18, 122, 223, ${transparency})`,
+
+                  border: `1px solid ${
+                    transparency === 0
+                      ? "#EEF6FD"
+                      : i > currentBox
+                      ? "#EEF6FD"
+                      : "transparent"
+                  }`,
+                }}
+              />
+            </Tooltip>
           );
         })}
       </div>
+
+      <Toaster
+        toastOptions={{
+          className: matter.className,
+          style: {
+            border: "1px solid #000",
+            padding: "16px",
+            fontSize: "14px",
+            color: "#000",
+          },
+        }}
+      />
     </div>
   );
 }
