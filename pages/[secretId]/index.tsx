@@ -58,9 +58,8 @@ type Exercise = {
   sets: Set[];
 };
 
-export default function Add() {
+export default function Add(props: { password: string }) {
   const today = new Date().toISOString().split("T")[0];
-
   const [date, setDate] = useState<string>(today);
   const [hours, setHours] = useState<number>();
   const [minutes, setMinutes] = useState<number>();
@@ -115,6 +114,7 @@ export default function Add() {
         workoutId: workoutId,
         typeId: selectedType.id,
         sets: sets,
+        password: props.password
       }),
     }).then((res) => {
       if (res.ok) {
@@ -155,6 +155,7 @@ export default function Add() {
         avgHeartRate: heartRate,
         notes: notes,
         calories: calories,
+        password: props.password,
       }),
     }).then((res) => {
       if (res.ok) {
@@ -172,9 +173,11 @@ export default function Add() {
   };
 
   return (
-    <div style={{
-      padding: '50px'
-    }}>
+    <div
+      style={{
+        padding: "50px",
+      }}
+    >
       <div>
         {workoutId != undefined && (
           <div
@@ -658,8 +661,10 @@ export const getStaticProps: GetStaticProps = async (context) => {
     };
   }
 
+  const password = process.env.PASSWORD;
+
   return {
-    props: { Status: "Authenticated" },
+    props: { password: password },
   };
 };
 
