@@ -9,7 +9,6 @@ import ChevronDownIcon from "@/public/icons/chevron-down.svg";
 import Image from "next/image";
 import { Type } from "@prisma/client";
 import { ScrollArea } from "@mantine/core";
-import Router, { useRouter } from "next/router";
 import { GetStaticProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 

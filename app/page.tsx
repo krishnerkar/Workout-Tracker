@@ -38,29 +38,38 @@ const matter = localFont({
   display: "swap",
 });
 
+let i = 0;
+
 export default function Home() {
   const [workouts, setWorkouts] = useState<SimpleWorkout[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/get-workouts", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((data) => {
-          setWorkouts(data.workouts);
-        });
-      } else {
-        toast.error("Something went wrong!");
-      }
-    });
+    if (workouts.length > 0 || i > 0) {
+      return;
+    } else {
+      setIsLoading(true);
+      fetch("/api/get-workouts", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        if (res.ok) {
+          res.json().then((data) => {
+            setWorkouts(data.workouts);
+            i++;
+          });
+        } else {
+          toast.error("Something went wrong!");
+        }
+        setIsLoading(false);
+      });
+    }
   });
 
   const time = workouts?.map((workout) => workout.hours * 60 + workout.minutes);
   const max = Math.max(...(time || []));
-  const min = Math.min(0);
 
   const [currentBox, setCurrentBox] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -94,68 +103,78 @@ export default function Home() {
           20 mins or 90 mins. `}
         <b>JUST SHOW UP EVERYDAY.</b>
       </h2>
+      {!isLoading ? (
+        <div className={styles.grid}>
+          {[...Array(7 * 4 * 7)].map((_, i) => {
+            const day = i + 2;
+            const date = new Date(new Date().getFullYear(), 0, day);
 
-      <div className={styles.grid}>
-        {[...Array(7 * 4 * 7)].map((_, i) => {
-          const day = i + 2;
-          const date = new Date(new Date().getFullYear(), 0, day);
+            let transparency = 0;
 
-          let transparency = 0;
+            const workoutForDate = workouts.find(
+              (workout) => workout.date === date.toISOString().split("T")[0]
+            );
+            if (workoutForDate) {
+              currWorkoutIndex = workouts.indexOf(workoutForDate);
+              transparency = time[currWorkoutIndex] / max;
+            }
 
-          const workoutForDate = workouts.find(
-            (workout) => workout.date === date.toISOString().split("T")[0]
-          );
-          if (workoutForDate) {
-            currWorkoutIndex = workouts.indexOf(workoutForDate);
-            transparency = time[currWorkoutIndex] / max;
-          }
+            const dateString = new Date(date.toISOString().split("T")[0])
+              .toLocaleDateString("en-US", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+              })
+              .split(",")
+              .join("");
 
-          const dateString = new Date(date.toISOString().split("T")[0])
-            .toLocaleDateString("en-US", {
-              weekday: "short",
-              month: "short",
-              day: "numeric",
-            })
-            .split(",")
-            .join("");
-
-          return (
-            <Tooltip
-              className={matter.className}
-              style={{
-                background: "#000",
-                fontSize: "10px",
-              }}
-              key={i}
-              label={
-                transparency !== 0
-                  ? `${time[currWorkoutIndex]} minutes - ${dateString}`
-                  : `No workout on ${dateString}`
-              }
-            >
-              <div
-                className={`${styles.box} ${
-                  i === currentBox ? styles.animate : ""
-                }`}
+            return (
+              <Tooltip
+                className={matter.className}
                 style={{
-                  background:
-                    i > currentBox
-                      ? "transparent"
-                      : `rgb(18, 122, 223, ${transparency})`,
-
-                  border: `1px solid ${
-                    transparency === 0
-                      ? "#EEF6FD"
-                      : i > currentBox
-                      ? "#EEF6FD"
-                      : "transparent"
-                  }`,
+                  background: "#000",
+                  fontSize: "10px",
                 }}
-              />
-            </Tooltip>
-          );
-        })}
-      </div>
+                key={i}
+                label={
+                  transparency !== 0
+                    ? `${time[currWorkoutIndex]} minutes - ${dateString}`
+                    : `No workout on ${dateString}`
+                }
+              >
+                <div
+                  className={`${styles.box} ${
+                    i === currentBox ? styles.animate : ""
+                  }`}
+                  style={{
+                    background:
+                      i > currentBox
+                        ? "transparent"
+                        : `rgb(18, 122, 223, ${transparency})`,
+
+                    border: `1px solid ${
+                      transparency === 0
+                        ? "#EEF6FD"
+                        : i > currentBox
+                        ? "#EEF6FD"
+                        : "transparent"
+                    }`,
+                  }}
+                />
+              </Tooltip>
+            );
+          })}
+        </div>
+      ) : (
+        <div
+          style={{
+            marginTop: 100,
+            width: 40,
+            height: 40,
+          }}
+          className={styles.spinnerBlack}
+        />
+      )}
 
       <Toaster
         toastOptions={{
@@ -167,8 +186,7 @@ export default function Home() {
             color: "#000",
           },
         }}
-          />
-        
+      />
     </div>
   );
 }

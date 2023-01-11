@@ -69,6 +69,19 @@
   animation: spin 0.6s linear infinite;
 }
 
+.spinnerBlack {
+  border: 2px solid rgb(0, 0, 0);
+  border-left-color: transparent;
+  border-radius: 50%;
+  border-top-color: transparent;
+  height: 20px;
+  width: 20px;
+  transition: opacity 0.15s 0.15s, width 0.15s, margin-left 0.15s;
+  animation: spin 0.6s linear infinite;
+}
+
+
+
 .dropdownItem {
   color: rgb(255, 255, 255);
   padding: 15px 20px;
