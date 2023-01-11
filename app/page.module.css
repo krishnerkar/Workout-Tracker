@@ -129,11 +129,11 @@
 
 @media only screen and (max-width: 598px) {
   .main {
-    padding: 20px;
+    padding: 30px;
   }
 
   .title {
-    font-size: 40px;
+    font-size:40px;
   }
 
   .description {
@@ -141,13 +141,13 @@
   }
 
   .box {
-    width: 25px;
-    height: 25px;
-    border-radius: 3px;
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
   }
 
   .grid {
-    grid-template-columns: repeat(7, 25px);
+    grid-template-columns: repeat(7, 30px);
     grid-gap: 5px;
     grid-auto-flow: row;
     margin-top: 30px;
