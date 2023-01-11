@@ -88,7 +88,6 @@ export default function Home() {
   }, [currentBox, isAnimating, workouts]);
 
   const today = new Date();
-  const startOfYear = new Date(today.getFullYear(), 0, 1);
   let currWorkoutIndex = 0;
 
   return (

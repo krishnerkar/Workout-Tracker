@@ -80,8 +80,6 @@
   animation: spin 0.6s linear infinite;
 }
 
-
-
 .dropdownItem {
   color: rgb(255, 255, 255);
   padding: 15px 20px;
@@ -131,7 +129,7 @@
 
 @media only screen and (max-width: 598px) {
   .main {
-    padding: 40px;
+    padding: 20px;
   }
 
   .title {
@@ -143,14 +141,16 @@
   }
 
   .box {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
     border-radius: 3px;
   }
 
   .grid {
-    grid-template-columns: repeat(auto-fill, 20px);
-    grid-gap: 3px;
+    grid-template-columns: repeat(7, 25px);
+    grid-gap: 5px;
+    grid-auto-flow: row;
+    margin-top: 30px;
   }
 }
 
@@ -159,6 +159,10 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
