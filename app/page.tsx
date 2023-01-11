@@ -89,8 +89,6 @@ export default function Home() {
 
   const today = new Date();
   const startOfYear = new Date(today.getFullYear(), 0, 1);
-  const diffInMilliSeconds = today.getTime() - startOfYear.getTime();
-  const oneDay = 1000 * 60 * 60 * 24;
   let currWorkoutIndex = 0;
 
   return (
