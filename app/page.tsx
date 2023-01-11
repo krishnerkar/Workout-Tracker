@@ -6,7 +6,6 @@ import styles from "./page.module.css";
 import { SimpleWorkout } from "pages/api/get-workouts";
 import { toast, Toaster } from "react-hot-toast";
 import { Tooltip } from "@mantine/core";
-import Router from "next/router";
 
 const calSans = localFont({
   src: "../fonts/CalSans-SemiBold.woff",
@@ -39,16 +38,7 @@ const matter = localFont({
   display: "swap",
 });
 
-export default function Home({ params }: { params: { "secret-id": string } }) {
-
-
-  const secretId = params["secret-id"];
-  const actualSecretId = process.env.SECRET_ID;
-
-  if (secretId !== actualSecretId) {
-    Router.push("/");
-  }
-
+export default function Home() {
   const [workouts, setWorkouts] = useState<SimpleWorkout[]>([]);
 
   useEffect(() => {
@@ -96,8 +86,6 @@ export default function Home({ params }: { params: { "secret-id": string } }) {
 
   return (
     <div>
-      {secretId === actualSecretId && (
-        <>
       <h1 className={`${styles.title} ${calSans.className}`}>
         {"Krish's Workout Streak"}
       </h1>
@@ -180,8 +168,7 @@ export default function Home({ params }: { params: { "secret-id": string } }) {
           },
         }}
           />
-          </>
-      )}
+        
     </div>
   );
 }

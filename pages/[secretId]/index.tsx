@@ -1,14 +1,17 @@
 "use client";
 
 import localFont from "@next/font/local";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
-import styles from "../page.module.css";
+import styles from "../../app/page.module.css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import ChevronDownIcon from "@/public/icons/chevron-down.svg";
 import Image from "next/image";
 import { Type } from "@prisma/client";
 import { ScrollArea } from "@mantine/core";
+import Router, { useRouter } from "next/router";
+import { GetStaticProps } from "next";
+import { ParsedUrlQuery } from "querystring";
 
 const calSans = localFont({
   src: "../../fonts/CalSans-SemiBold.woff",
@@ -56,7 +59,7 @@ type Exercise = {
   sets: Set[];
 };
 
-export default function Home() {
+export default function Add() {
   const today = new Date().toISOString().split("T")[0];
 
   const [date, setDate] = useState<string>(today);
@@ -135,7 +138,7 @@ export default function Home() {
   };
 
   const addWorkout = () => {
-    if ( !minutes || !calories || !heartRate) {
+    if (!minutes || !calories || !heartRate) {
       toast.error("Please fill in all fields!");
       return;
     }
@@ -170,7 +173,9 @@ export default function Home() {
   };
 
   return (
-    <>
+    <div style={{
+      padding: '50px'
+    }}>
       <div>
         {workoutId != undefined && (
           <div
@@ -634,6 +639,34 @@ export default function Home() {
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
+}
+interface IParams extends ParsedUrlQuery {
+  secretId: string;
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const { secretId } = context.params as IParams;
+  const actualSecretId = process.env.SECRET_ID;
+
+  if (secretId !== actualSecretId) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: { Status: "Authenticated" },
+  };
+};
+
+export async function getStaticPaths() {
+  return {
+    paths: [`/${process.env.SECRET_ID}`],
+    fallback: true,
+  };
 }
